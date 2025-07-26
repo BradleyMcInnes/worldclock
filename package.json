@@ -1,0 +1,10 @@
+{
+  "name": "world-clock-app",
+  "version": "1.0.0",
+  "description": "A dynamic front-end world clock application",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server --bind 0.0.0.0 $PORT"
+  },
+  "license": "MIT"
+}

@@ -11,6 +11,10 @@ This is a client-side World Clock application that displays real-time clocks for
 ✓ Added separate display method (updateCityDisplayCustom) to prevent double timezone conversion
 ✓ Removed debug logging after successful testing
 ✓ Custom time converter now works correctly: selected city shows entered time, other cities show equivalent times
+✓ Fixed deployment configuration issues:
+  - Created package.json with proper npm start script that runs Python HTTP server
+  - Configured deployment to use PORT environment variable for cloud hosting
+  - Maintained Python-based serving while supporting npm deployment commands
 
 ## User Preferences
 
@@ -74,8 +78,15 @@ This application can be deployed to any static hosting service since it requires
 /
 ├── index.html (main page)
 ├── script.js (application logic)
-└── styles.css (styling)
+├── styles.css (styling)
+└── package.json (deployment configuration)
 ```
+
+### Replit Deployment Configuration
+The project is configured for Replit deployments with:
+- **package.json**: Contains npm start script that runs Python HTTP server
+- **Port Binding**: Uses PORT environment variable for cloud hosting compatibility
+- **Server Command**: `python3 -m http.server --bind 0.0.0.0 $PORT`
 
 ### Browser Compatibility
 The application uses modern JavaScript features (ES6 classes, Intl API) and requires browsers that support:
