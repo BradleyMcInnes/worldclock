@@ -1,17 +1,12 @@
 // World Clock Application
 class WorldClock {
     constructor() {
-        // Time zone mappings for each city
+        // Time zone mappings for each city (ordered from earliest to latest time)
         this.cities = {
-            melbourne: {
-                name: 'Melbourne',
-                country: 'Australia',
-                timezone: 'Australia/Melbourne'
-            },
-            wellington: {
-                name: 'Wellington',
-                country: 'New Zealand',
-                timezone: 'Pacific/Auckland'
+            boston: {
+                name: 'Boston',
+                country: 'United States',
+                timezone: 'America/New_York'
             },
             london: {
                 name: 'London',
@@ -28,10 +23,15 @@ class WorldClock {
                 country: 'Singapore',
                 timezone: 'Asia/Singapore'
             },
-            boston: {
-                name: 'Boston',
-                country: 'United States',
-                timezone: 'America/New_York'
+            melbourne: {
+                name: 'Melbourne',
+                country: 'Australia',
+                timezone: 'Australia/Melbourne'
+            },
+            wellington: {
+                name: 'Wellington',
+                country: 'New Zealand',
+                timezone: 'Pacific/Auckland'
             }
         };
 
