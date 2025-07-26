@@ -175,7 +175,7 @@ class WorldClock {
             if (cityKey === this.selectedCity) {
                 // Step 1: Show the exact custom time in the selected city
                 console.log('Setting custom time for selected city:', cityKey);
-                this.updateCityDisplay(cityKey, this.customBaseTime);
+                this.updateCityDisplayCustom(cityKey, this.customBaseTime);
             } else {
                 // Step 2: Calculate equivalent time in other cities
                 const equivalentTime = this.getEquivalentTimeInCity(
@@ -184,7 +184,7 @@ class WorldClock {
                     this.cities[cityKey].timezone
                 );
                 console.log('Setting equivalent time for:', cityKey, equivalentTime);
-                this.updateCityDisplay(cityKey, equivalentTime);
+                this.updateCityDisplayCustom(cityKey, equivalentTime);
             }
         });
     }
@@ -256,6 +256,48 @@ class WorldClock {
             // Format date
             const dateOptions = {
                 timeZone: city.timezone,
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            };
+            
+            const formattedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(time);
+            
+            // Update display with smooth transition
+            timeElement.classList.add('updating');
+            setTimeout(() => {
+                timeElement.textContent = formattedTime;
+                dateElement.textContent = formattedDate;
+                timeElement.classList.remove('updating');
+            }, 100);
+            
+        } catch (error) {
+            console.error(`Error updating ${cityKey}:`, error);
+            timeElement.textContent = 'Error';
+            dateElement.textContent = 'Invalid timezone';
+        }
+    }
+
+    updateCityDisplayCustom(cityKey, time) {
+        const timeElement = document.getElementById(`${cityKey}-time`);
+        const dateElement = document.getElementById(`${cityKey}-date`);
+        
+        if (!timeElement || !dateElement) return;
+
+        try {
+            // Format time directly without timezone conversion
+            const timeOptions = {
+                hour12: true,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            
+            const formattedTime = new Intl.DateTimeFormat('en-US', timeOptions).format(time);
+            
+            // Format date directly without timezone conversion
+            const dateOptions = {
                 weekday: 'short',
                 month: 'short',
                 day: 'numeric',
