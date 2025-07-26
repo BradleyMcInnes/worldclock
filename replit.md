@@ -4,6 +4,14 @@
 
 This is a client-side World Clock application that displays real-time clocks for 6 major cities around the world. The application features both live time display and custom time conversion capabilities, allowing users to see what time it would be in different cities at any given moment.
 
+## Recent Changes (July 26, 2025)
+
+✓ Fixed custom time converter functionality - selected city now displays exact entered time
+✓ Rebuilt timezone conversion logic with simplified hardcoded offsets and DST handling
+✓ Added separate display method (updateCityDisplayCustom) to prevent double timezone conversion
+✓ Removed debug logging after successful testing
+✓ Custom time converter now works correctly: selected city shows entered time, other cities show equivalent times
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
