@@ -166,9 +166,15 @@ class WorldClock {
     updateAllCitiesFromCustomTime() {
         if (!this.isCustomMode || !this.customBaseTime || !this.selectedCity) return;
 
+        console.log('Selected city:', this.selectedCity);
+        console.log('Custom time:', this.customBaseTime);
+
         Object.keys(this.cities).forEach(cityKey => {
+            console.log('Processing city:', cityKey, 'is selected?', cityKey === this.selectedCity);
+            
             if (cityKey === this.selectedCity) {
                 // Step 1: Show the exact custom time in the selected city
+                console.log('Setting custom time for selected city:', cityKey);
                 this.updateCityDisplay(cityKey, this.customBaseTime);
             } else {
                 // Step 2: Calculate equivalent time in other cities
@@ -177,6 +183,7 @@ class WorldClock {
                     this.cities[this.selectedCity].timezone,
                     this.cities[cityKey].timezone
                 );
+                console.log('Setting equivalent time for:', cityKey, equivalentTime);
                 this.updateCityDisplay(cityKey, equivalentTime);
             }
         });
