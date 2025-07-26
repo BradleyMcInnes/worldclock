@@ -95,27 +95,29 @@ class WorldClock {
         }
 
         try {
-            // Parse the datetime-local input value and treat it as the time in the selected city
-            const inputDate = new Date(customTimeValue);
+            // Parse the datetime-local input - this gives us the exact time the user entered
+            const customTime = new Date(customTimeValue);
             
-            if (isNaN(inputDate.getTime())) {
+            if (isNaN(customTime.getTime())) {
                 console.error('Invalid date input');
                 return;
             }
 
-            // Store the custom time and selected city info
-            this.customBaseTime = inputDate;
+            // Enter custom mode
             this.isCustomMode = true;
+            this.customBaseTime = customTime;
             
             this.updateModeIndicator();
             this.highlightSelectedCity();
-            this.updateCustomTimes();
             
-            // Stop live updates when in custom mode
+            // Stop live updates 
             if (this.updateInterval) {
                 clearInterval(this.updateInterval);
                 this.updateInterval = null;
             }
+            
+            // Update all cities based on the custom time
+            this.updateAllCitiesFromCustomTime();
             
         } catch (error) {
             console.error('Error parsing custom time:', error);
@@ -161,16 +163,16 @@ class WorldClock {
         });
     }
 
-    updateCustomTimes() {
+    updateAllCitiesFromCustomTime() {
         if (!this.isCustomMode || !this.customBaseTime || !this.selectedCity) return;
 
         Object.keys(this.cities).forEach(cityKey => {
             if (cityKey === this.selectedCity) {
-                // For the selected city, show the custom time directly
+                // Step 1: Show the exact custom time in the selected city
                 this.updateCityDisplay(cityKey, this.customBaseTime);
             } else {
-                // Calculate what time it would be in other cities when it's the custom time in the selected city
-                const equivalentTime = this.convertTimeAcrossTimezones(
+                // Step 2: Calculate equivalent time in other cities
+                const equivalentTime = this.getEquivalentTimeInCity(
                     this.customBaseTime,
                     this.cities[this.selectedCity].timezone,
                     this.cities[cityKey].timezone
@@ -180,51 +182,48 @@ class WorldClock {
         });
     }
 
-    convertTimeAcrossTimezones(sourceTime, sourceTimezone, targetTimezone) {
-        // Simple approach: Use the Intl API to find the actual time difference
-        // between timezones and apply it to the source time
+    getEquivalentTimeInCity(sourceTime, sourceTimezone, targetTimezone) {
+        // Simple approach: Create a "fake" UTC time that would display as our desired time
+        // in the source timezone, then convert that to the target timezone
         
-        // Create a reference date to check current timezone offsets
-        const referenceDate = new Date();
+        const year = sourceTime.getFullYear();
+        const month = sourceTime.getMonth();
+        const day = sourceTime.getDate();
+        const hours = sourceTime.getHours();
+        const minutes = sourceTime.getMinutes();
+        const seconds = sourceTime.getSeconds();
         
-        // Get the current UTC offset for both timezones
-        const sourceUtcOffset = this.getUtcOffset(referenceDate, sourceTimezone);
-        const targetUtcOffset = this.getUtcOffset(referenceDate, targetTimezone);
+        // Create a moment that when displayed in sourceTimezone shows our desired time
+        // We do this by creating the time in UTC and adjusting by the timezone offset
         
-        // Calculate the difference in hours between the timezones
-        const hoursDifference = targetUtcOffset - sourceUtcOffset;
+        // Get today's date to check current timezone offsets (handles DST correctly)
+        const today = new Date();
         
-        // Apply the timezone difference to the source time
-        return new Date(sourceTime.getTime() + (hoursDifference * 60 * 60 * 1000));
+        // Create our time as if it were UTC
+        const asUTC = new Date(Date.UTC(year, month, day, hours, minutes, seconds));
+        
+        // Get the current offset for the source timezone
+        const sourceOffsetMs = this.getCurrentTimezoneOffset(today, sourceTimezone);
+        
+        // Get the current offset for the target timezone  
+        const targetOffsetMs = this.getCurrentTimezoneOffset(today, targetTimezone);
+        
+        // Adjust the UTC time by the timezone difference
+        const timeDifferenceMs = targetOffsetMs - sourceOffsetMs;
+        
+        return new Date(asUTC.getTime() + timeDifferenceMs);
     }
 
-    getUtcOffset(date, timezone) {
-        // Use Intl.DateTimeFormat to get the timezone offset in hours
-        const formatter = new Intl.DateTimeFormat('en', {
-            timeZone: timezone,
-            timeZoneName: 'longOffset'
-        });
+    getCurrentTimezoneOffset(date, timezone) {
+        // Get the current timezone offset in milliseconds
+        // This method uses the fact that toLocaleString with timeZone gives us the local time
         
-        const parts = formatter.formatToParts(date);
-        const offsetString = parts.find(part => part.type === 'timeZoneName')?.value;
+        // Create the same moment in time but formatted for different timezones
+        const utcTime = new Date(date.toLocaleString('en-CA', { timeZone: 'UTC' }));
+        const localTime = new Date(date.toLocaleString('en-CA', { timeZone: timezone }));
         
-        if (!offsetString) {
-            // Fallback method using toLocaleString
-            const utcTime = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
-            const zoneTime = new Date(date.toLocaleString('en-US', { timeZone: timezone }));
-            return (zoneTime.getTime() - utcTime.getTime()) / (1000 * 60 * 60);
-        }
-        
-        // Parse offset string like "GMT+12" or "GMT-5"
-        const match = offsetString.match(/GMT([+-])(\d{1,2})(?::?(\d{2}))?/);
-        if (match) {
-            const sign = match[1] === '+' ? 1 : -1;
-            const hours = parseInt(match[2], 10);
-            const minutes = parseInt(match[3] || '0', 10);
-            return sign * (hours + minutes / 60);
-        }
-        
-        return 0; // Default to UTC if parsing fails
+        // The difference is the timezone offset
+        return localTime.getTime() - utcTime.getTime();
     }
 
     updateCityDisplay(cityKey, time) {
