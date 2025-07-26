@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Clock</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>World Clock</h1>
+            <p class="subtitle">Real-time across 6 major cities</p>
+        </header>
+
+        <div class="custom-time-controls">
+            <h2>Custom Time Converter</h2>
+            <div class="controls-row">
+                <div class="control-group">
+                    <label for="citySelect">Select City:</label>
+                    <select id="citySelect">
+                        <option value="">Live Time Mode</option>
+                        <option value="melbourne">Melbourne, Australia</option>
+                        <option value="wellington">Wellington, New Zealand</option>
+                        <option value="london">London, UK</option>
+                        <option value="delhi">New Delhi, India</option>
+                        <option value="singapore">Singapore, Singapore</option>
+                        <option value="boston">Boston, USA</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="customTime">Set Time:</label>
+                    <input type="datetime-local" id="customTime" disabled>
+                </div>
+                <button id="resetBtn" class="reset-btn">Reset to Live Time</button>
+            </div>
+        </div>
+
+        <div class="time-grid">
+            <div class="time-card" data-city="melbourne">
+                <div class="city-name">Melbourne</div>
+                <div class="country">Australia</div>
+                <div class="time" id="melbourne-time">--:--:--</div>
+                <div class="date" id="melbourne-date">-- -- ----</div>
+            </div>
+
+            <div class="time-card" data-city="wellington">
+                <div class="city-name">Wellington</div>
+                <div class="country">New Zealand</div>
+                <div class="time" id="wellington-time">--:--:--</div>
+                <div class="date" id="wellington-date">-- -- ----</div>
+            </div>
+
+            <div class="time-card" data-city="london">
+                <div class="city-name">London</div>
+                <div class="country">United Kingdom</div>
+                <div class="time" id="london-time">--:--:--</div>
+                <div class="date" id="london-date">-- -- ----</div>
+            </div>
+
+            <div class="time-card" data-city="delhi">
+                <div class="city-name">New Delhi</div>
+                <div class="country">India</div>
+                <div class="time" id="delhi-time">--:--:--</div>
+                <div class="date" id="delhi-date">-- -- ----</div>
+            </div>
+
+            <div class="time-card" data-city="singapore">
+                <div class="city-name">Singapore</div>
+                <div class="country">Singapore</div>
+                <div class="time" id="singapore-time">--:--:--</div>
+                <div class="date" id="singapore-date">-- -- ----</div>
+            </div>
+
+            <div class="time-card" data-city="boston">
+                <div class="city-name">Boston</div>
+                <div class="country">United States</div>
+                <div class="time" id="boston-time">--:--:--</div>
+                <div class="date" id="boston-date">-- -- ----</div>
+            </div>
+        </div>
+
+        <div class="mode-indicator">
+            <span id="modeText">Live Time Mode</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
